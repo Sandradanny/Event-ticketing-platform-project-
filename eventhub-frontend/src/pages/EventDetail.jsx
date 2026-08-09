@@ -4,7 +4,7 @@ export default function EventDetail() {
       <h1>Event Detail Page</h1>
 
       <img
-        src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800"
+        src="https://www.nairaland.com/attachments/10777606_images20191224t074623_691_jpeg_jpeg97078c120ab3249e69545e9cf84a764f"
         alt="Lagos Music Festival"
         style={{ width: '100%', maxWidth: '600px', borderRadius: '12px' }}
       />
