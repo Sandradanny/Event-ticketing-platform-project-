@@ -1,0 +1,38 @@
+.home {
+  min-height: 100vh;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #3db7f2, #0b7ec2);
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.hero-btn {
+  background: white;
+  color: #0b7ec2;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
