@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import Navbar from '../shared/components/Navbar'
+import Navbar from '../Navbar'
 import './Home.css'
 
 export default function Home() {
