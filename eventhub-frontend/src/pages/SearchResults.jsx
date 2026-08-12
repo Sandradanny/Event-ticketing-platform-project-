@@ -18,7 +18,7 @@ export default function SearchResults() {
 
         <p style={{ color: '#555', fontSize: '1.1rem', maxWidth: '500px' }}>
           New events will be published here soon. Stay tuned for concerts,
-          conferences, workshops and cultural experiences.
+          conferences, workshops and cultural experiences(STAY TUNE OOO, YOU HEAR).
         </p>
 
         <button

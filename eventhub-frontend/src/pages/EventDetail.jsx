@@ -17,7 +17,7 @@ export default function EventDetail() {
         </h1>
 
         <p style={{ color: '#555', maxWidth: '500px' }}>
-          Detailed information for selected events will be displayed here soon.
+          Detailed information for selected events will be displayed here soon (STAY TUNE, YOU HEAR).
         </p>
       </div>
     </div>
