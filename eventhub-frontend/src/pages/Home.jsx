@@ -1,41 +1,22 @@
+import { Link } from 'react-router-dom'
+import Navbar from '../components/Navbar'
+import './Home.css'
+
 export default function Home() {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #3db7f2, #0b7ec2)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        color: 'white',
-        fontFamily: 'Arial',
-        padding: '20px'
-      }}
-    >
-      <div>
-        <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>
-          Discover Amazing Events
-        </h1>
+    <>
+      <Navbar />
 
-        <p style={{ fontSize: '1.2rem', marginBottom: '30px' }}>
+      <section className="hero">
+        <h1>Discover Amazing Events</h1>
+        <p>
           Browse concerts, conferences, festivals and book tickets online.
         </p>
 
-        <button
-          style={{
-            background: 'white',
-            color: '#0b7ec2',
-            border: 'none',
-            padding: '14px 28px',
-            borderRadius: '10px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
-        >
+        <Link to="/events" className="hero-btn">
           Explore Events
-        </button>
-      </div>
-    </div>
+        </Link>
+      </section>
+    </>
   )
 }
