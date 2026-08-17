@@ -8,7 +8,7 @@ const events = [
     location: 'RCCG House of Grace, Isolo, Lagos',
     price: 'Free',
     description:
-      'Join us for the Northern Regional Thanksgiving, a special gathering to celebrate and give thanks for God’s faithfulness.',
+      'Join us for the Northern Regional Thanksgiving, a special gathering to celebrate and give thanks for God’s faithfulness in a Northern way.',
   },
   {
     id: '2',
