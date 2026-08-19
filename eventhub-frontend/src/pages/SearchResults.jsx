@@ -12,11 +12,15 @@ export default function SearchResults() {
         {events.map((event) => (
           <div key={event.id} style={styles.card}>
             <div style={styles.image}>
-              <img
-                src={event.image}
-                alt={event.title}
-                style={styles.eventImage}
-              />
+              {event.image ? (
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  style={styles.eventImage}
+                />
+              ) : (
+                <span>Event</span>
+              )}
             </div>
 
             <div style={styles.content}>
@@ -50,18 +54,12 @@ export default function SearchResults() {
   );
 }
 
-image: {
-  height: "180px",
-  backgroundColor: "#6f7ee8",
-  overflow: "hidden",
-};
-
-eventImage: {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  display: "block",
-},
+const styles = {
+  container: {
+    padding: "40px",
+    backgroundColor: "#f5f7fb",
+    minHeight: "100vh",
+  },
 
   heading: {
     textAlign: "center",
@@ -86,13 +84,21 @@ eventImage: {
 
   image: {
     height: "180px",
-    backgroundColor: "#99a4e0",
+    backgroundColor: "#6f7ee8",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     color: "white",
-    fontSize: "22px",
+    fontSize: "20px",
     fontWeight: "bold",
+    overflow: "hidden",
+  },
+
+  eventImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
   },
 
   content: {
