@@ -3,7 +3,7 @@ import events from "../data/events";
 
 export default function EventDetail() {
   const { id } = useParams();
-  const { navigate } = useNavigate();
+  const navigate = useNavigate();
 
   const event = events.find(
     (event) => String(event.id) === String(id)
@@ -44,9 +44,7 @@ export default function EventDetail() {
           boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
         }}
       >
-        <h1 style={{ marginBottom: "20px" }}>
-          {event.title}
-        </h1>
+        <h1>{event.title}</h1>
 
         <p>
           📅 <strong>Date:</strong> {event.date}
@@ -65,21 +63,22 @@ export default function EventDetail() {
         <h2>About this event</h2>
 
         <p style={{ lineHeight: "1.7" }}>
-          {event.description ||
-            "More information about this event will be available soon."}
+          {event.description}
         </p>
 
         <button
-        onClick={() => navigate("/login")}
+          type="button"
+          onClick={() => navigate("/login")}
           style={{
             marginTop: "25px",
             padding: "12px 24px",
-            background: "#99a9e0",
+            backgroundColor: "#99a1e0",
             color: "white",
             border: "none",
             borderRadius: "8px",
             cursor: "pointer",
             fontSize: "16px",
+            fontWeight: "bold",
           }}
         >
           Attend Event
