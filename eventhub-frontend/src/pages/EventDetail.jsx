@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import events from "../data/events";
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ export default function EventDetail() {
           background: "white",
           padding: "35px",
           borderRadius: "12px",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
         }}
       >
         <h1 style={{ marginBottom: "20px" }}>
@@ -63,14 +64,15 @@ export default function EventDetail() {
         <h2>About this event</h2>
 
         <p style={{ lineHeight: "1.7" }}>
-          {event.description || "More information about this event will be available soon."}
+          {event.description ||
+            "More information about this event will be available soon."}
         </p>
 
         <button
           style={{
             marginTop: "25px",
             padding: "12px 24px",
-            background: "#e099cc",
+            background: "#99a9e0",
             color: "white",
             border: "none",
             borderRadius: "8px",
