@@ -11,15 +11,16 @@ export default function SearchResults() {
       <div style={styles.grid}>
         {events.map((event) => (
           <div key={event.id} style={styles.card}>
-
             <div style={styles.image}>
-              Event
+              <img
+                src={event.image}
+                alt={event.title}
+                style={styles.eventImage}
+              />
             </div>
 
             <div style={styles.content}>
-              <h2 style={styles.title}>
-                {event.title}
-              </h2>
+              <h2 style={styles.title}>{event.title}</h2>
 
               <p style={styles.info}>
                 📅 <strong>Date:</strong> {event.date}
@@ -42,7 +43,6 @@ export default function SearchResults() {
                 </button>
               </div>
             </div>
-
           </div>
         ))}
       </div>
@@ -50,12 +50,18 @@ export default function SearchResults() {
   );
 }
 
-const styles = {
-  container: {
-    padding: "40px",
-    backgroundColor: "#f5f7fb",
-    minHeight: "100vh",
-  },
+image: {
+  height: "180px",
+  backgroundColor: "#6f7ee8",
+  overflow: "hidden",
+},
+
+eventImage: {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  display: "block",
+},
 
   heading: {
     textAlign: "center",
