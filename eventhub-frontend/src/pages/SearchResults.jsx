@@ -80,7 +80,7 @@ const styles = {
 
   image: {
     height: "180px",
-    backgroundColor: "#e099cc",
+    backgroundColor: "#99a4e0",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -112,7 +112,7 @@ const styles = {
 
   button: {
     padding: "10px 16px",
-    backgroundColor: "#e099cc",
+    backgroundColor: "#99a9e0",
     color: "white",
     border: "none",
     borderRadius: "8px",
