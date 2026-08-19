@@ -1,3 +1,5 @@
+import northernthanksgiving from "../assets/northern.jpeg";
+
 const events = [
   {
     id: "1",
