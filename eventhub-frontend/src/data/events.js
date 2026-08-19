@@ -1,5 +1,5 @@
 import northern from "../assets/northern.jpeg";
-import tech from "..src/assets/tech.jpg";
+import tech from "../assets/tech.jpg";
 
 const events = [
   {
@@ -19,6 +19,7 @@ const events = [
     date: "12 September 2026",
     location: "Lagos, Nigeria",
     price: "₦5,000",
+    Image: tech
     description:
       "A technology and innovation conference bringing together developers, entrepreneurs, creatives and technology enthusiasts to learn, connect and explore new ideas."
   },
