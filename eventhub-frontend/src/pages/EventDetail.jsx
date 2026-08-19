@@ -1,25 +1,89 @@
+import { useParams, useNavigate } from "react-router-dom";
+import events from "../data/events";
+
 export default function EventDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const event = events.find(
+    (event) => String(event.id) === String(id)
+  );
+
+  if (!event) {
+    return (
+      <div
+        style={{
+          padding: "40px",
+          textAlign: "center",
+          minHeight: "100vh",
+          background: "#f5f7fb",
+        }}
+      >
+        <h1>Event Not Found</h1>
+        <p>Sorry, we couldn't find this event.</p>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
-        minHeight: '80vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        fontFamily: 'Arial',
-        padding: '40px'
+        minHeight: "100vh",
+        padding: "50px",
+        background: "#f5f7fb",
+        fontFamily: "Arial",
       }}
     >
-      <div>
-        <h1 style={{ color: '#0099cc', marginBottom: '16px' }}>
-          Event Details
-        </h1>
+      <div
+        style={{
+          maxWidth: "800px",
+          margin: "0 auto",
+          background: "white",
+          padding: "35px",
+          borderRadius: "12px",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
+        }}
+      >
+        <h1>{event.title}</h1>
 
-        <p style={{ color: '#555', maxWidth: '500px' }}>
-          Detailed information for selected events will be displayed here soon (STAY TUNE, YOU HEAR).
+        <p>
+          📅 <strong>Date:</strong> {event.date}
         </p>
+
+        <p>
+          📍 <strong>Location:</strong> {event.location}
+        </p>
+
+        <p>
+          💰 <strong>Price:</strong> {event.price}
+        </p>
+
+        <hr style={{ margin: "25px 0" }} />
+
+        <h2>About this event</h2>
+
+        <p style={{ lineHeight: "1.7" }}>
+          {event.description}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => navigate("/login")}
+          style={{
+            marginTop: "25px",
+            padding: "12px 24px",
+            backgroundColor: "#99a1e0",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          Attend Event
+        </button>
       </div>
     </div>
-  )
+  );
 }
