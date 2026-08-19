@@ -1,5 +1,8 @@
 import northern from "../assets/northern.jpeg";
 import tech from "../assets/tech.jpg";
+import afrobeat from "../assets/afrobeat.jpg";
+import lagos from "../assets/lagos.png";
+import arts from "../assets/arts.jpg";
 
 const events = [
   {
@@ -30,6 +33,7 @@ const events = [
     date: "19 September 2026",
     location: "Eko Convention Centre, Lagos",
     price: "₦15,000",
+    image: afrobeat,
     description:
       "Experience an exciting night of Afrobeats, live performances, entertainment and unforgettable moments featuring talented artists and performers."
   },
@@ -40,6 +44,7 @@ const events = [
     date: "26 September 2026",
     location: "Victoria Island, Lagos",
     price: "₦10,000",
+    image: lagos,
     description:
       "A business summit designed for entrepreneurs, business owners and aspiring founders to learn, network and discover practical strategies for building successful businesses."
   },
@@ -50,6 +55,7 @@ const events = [
     date: "3 October 2026",
     location: "Freedom Park, Lagos",
     price: "₦7,500",
+    image: arts,
     description:
       "A celebration of creativity, culture, art, music and performance featuring artists and creatives from different backgrounds."
   }
