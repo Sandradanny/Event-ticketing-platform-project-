@@ -8,9 +8,7 @@ export default function Login() {
       <div style={styles.card}>
         <h3 style={styles.title}>Welcome Back Cutie🥰</h3>
 
-        <p style={styles.subtitle}>
-          Login to continue to your account
-        </p>
+        <p style={styles.subtitle}>Login to continue to your account</p>
 
         <form>
           <div style={styles.field}>
@@ -53,7 +51,11 @@ export default function Login() {
             </a>
           </div>
 
-          <button type="submit" style={styles.loginButton}>
+          <button
+            type="submit"
+            style={styles.loginButton}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold"
+          >
             Login
           </button>
         </form>
@@ -148,7 +150,7 @@ const styles = {
   loginButton: {
     width: "100%",
     padding: "13px",
-    backgroundColor: "#e099cc",
+    backgroundColor: "#fd0c08",
     color: "white",
     border: "none",
     borderRadius: "8px",
