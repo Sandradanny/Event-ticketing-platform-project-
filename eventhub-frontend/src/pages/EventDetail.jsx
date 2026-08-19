@@ -3,7 +3,7 @@ import events from "../data/events";
 
 export default function EventDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { navigate } = useNavigate();
 
   const event = events.find(
     (event) => String(event.id) === String(id)
