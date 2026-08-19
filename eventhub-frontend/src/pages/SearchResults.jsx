@@ -54,7 +54,7 @@ image: {
   height: "180px",
   backgroundColor: "#6f7ee8",
   overflow: "hidden",
-},
+};
 
 eventImage: {
   width: "100%",
