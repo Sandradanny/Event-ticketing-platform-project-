@@ -54,7 +54,7 @@ export default function Login() {
           <button
             type="submit"
             style={styles.loginButton}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold"
+            className="hover:bg-blue-700 hover:scale-105 transition duration-300"
           >
             Login
           </button>
