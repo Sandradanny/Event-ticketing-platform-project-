@@ -11,30 +11,32 @@ export default function SearchResults() {
       <div style={styles.grid}>
         {events.map((event) => (
           <div key={event.id} style={styles.card}>
-            
+
             <div style={styles.image}>
               Event
             </div>
 
             <div style={styles.content}>
-              <h2 style={styles.title}>{event.title}</h2>
+              <h2 style={styles.title}>
+                {event.title}
+              </h2>
 
               <p style={styles.info}>
-                📅 {event.date}
+                📅 <strong>Date:</strong> {event.date}
               </p>
 
               <p style={styles.info}>
-                📍 {event.location}
+                📍 <strong>Location:</strong> {event.location}
+              </p>
+
+              <p style={styles.info}>
+                💰 <strong>Price:</strong> {event.price}
               </p>
 
               <div style={styles.bottom}>
-                <span style={styles.price}>
-                  {event.price}
-                </span>
-
                 <button
-                  style={styles.button}
                   onClick={() => navigate(`/event/${event.id}`)}
+                  style={styles.button}
                 >
                   View Details
                 </button>
@@ -73,7 +75,7 @@ const styles = {
     backgroundColor: "white",
     borderRadius: "12px",
     overflow: "hidden",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
   },
 
   image: {
@@ -92,9 +94,9 @@ const styles = {
   },
 
   title: {
-    marginTop: 0,
     marginBottom: "15px",
     color: "#333",
+    fontSize: "20px",
   },
 
   info: {
@@ -104,23 +106,18 @@ const styles = {
 
   bottom: {
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+    justifyContent: "flex-end",
     marginTop: "20px",
   },
 
-  price: {
-    fontWeight: "bold",
-    color: "#333",
-  },
-
   button: {
+    padding: "10px 16px",
     backgroundColor: "#e099cc",
     color: "white",
     border: "none",
     borderRadius: "8px",
-    padding: "12px 18px",
     cursor: "pointer",
     fontSize: "14px",
+    fontWeight: "bold",
   },
 };

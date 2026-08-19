@@ -6,9 +6,10 @@ import EventDetail from './pages/EventDetail'
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<SearchResults />} />
       <Route path="/events" element={<SearchResults />} />
       <Route path="/event/:id" element={<EventDetail />} />
+      {/* <Route path='login' element={login />} /> */}
     </Routes>
   )
 }
