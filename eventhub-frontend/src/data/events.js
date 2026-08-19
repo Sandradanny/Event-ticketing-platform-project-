@@ -7,7 +7,7 @@ const events = [
     date: "31 August 2026",
     location: "RCCG House of Grace, Isolo, Lagos",
     price: "Free",
-    Image: northernthanksgiving,
+    Image: "/northern.jpeg",
     description:
       "Join us for the Northern Regional Thanksgiving at RCCG House of Grace. It will be a wonderful time of thanksgiving, worship, praise and celebration of God's faithfulness."
   },
