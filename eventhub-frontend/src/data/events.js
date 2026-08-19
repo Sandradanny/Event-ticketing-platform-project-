@@ -1,4 +1,5 @@
 import northern from "../assets/northern.jpeg";
+import tech from "..src/assets/tech.jpg";
 
 const events = [
   {
