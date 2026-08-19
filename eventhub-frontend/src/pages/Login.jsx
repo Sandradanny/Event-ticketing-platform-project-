@@ -6,7 +6,7 @@ export default function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>Welcome Back Cutie🥰</h1>
+        <h3 style={styles.title}>Welcome Back Cutie🥰</h3>
 
         <p style={styles.subtitle}>
           Login to continue to your account
