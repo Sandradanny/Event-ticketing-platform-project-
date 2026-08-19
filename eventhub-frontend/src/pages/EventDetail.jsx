@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import events from "../data/events";
 
 export default function EventDetail() {
   const { id } = useParams();
+  const { id } = useNavigate();
 
   const event = events.find(
     (event) => String(event.id) === String(id)
@@ -69,6 +70,7 @@ export default function EventDetail() {
         </p>
 
         <button
+        onClick={() => navigate("/login")}
           style={{
             marginTop: "25px",
             padding: "12px 24px",

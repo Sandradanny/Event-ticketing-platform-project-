@@ -11,7 +11,7 @@ const events = [
 
   {
     id: "2",
-    title: "Tech & Innovation Conference 2026",
+    title: "Tech & Innovation Conference",
     date: "12 September 2026",
     location: "Lagos, Nigeria",
     price: "₦5,000",
