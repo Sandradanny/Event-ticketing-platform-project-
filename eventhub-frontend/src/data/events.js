@@ -19,7 +19,7 @@ const events = [
     date: "12 September 2026",
     location: "Lagos, Nigeria",
     price: "₦5,000",
-    Image: tech
+    Image: tech,
     description:
       "A technology and innovation conference bringing together developers, entrepreneurs, creatives and technology enthusiasts to learn, connect and explore new ideas."
   },
