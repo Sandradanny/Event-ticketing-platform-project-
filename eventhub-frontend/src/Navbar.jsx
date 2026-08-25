@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import './Navbar.css'
+import { Link } from "react-router-dom";
+import "./Navbar.css";
 
 export default function Navbar() {
   return (
@@ -10,7 +10,9 @@ export default function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/events">Events</Link>
         <Link to="/event/1">Details</Link>
+        <Link to="/login">Login</Link>
+        <Link to="/signup">Sign Up</Link>
       </div>
     </nav>
-  )
+  );
 }
