@@ -1,32 +1,61 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      alert("Please enter your email and password.");
+      return;
+    }
+
+    // Temporary frontend login
+    alert("Login successful!");
+
+    // Take the user back to the events page
+    navigate("/events");
+  };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h3 style={styles.title}>Welcome Back Cutie🥰</h3>
+        <h1 style={styles.title}>Welcome Back Cutie🥰</h1>
 
-        <p style={styles.subtitle}>Login to continue to your account</p>
+        <p style={styles.subtitle}>
+          Login to continue to your account
+        </p>
 
-        <form>
+        <form onSubmit={handleLogin}>
+          {/* Email */}
           <div style={styles.field}>
-            <label>Email Address</label>
+            <label style={styles.label}>Email Address</label>
+
             <input
               type="email"
-              placeholder="Enter your email Address"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               style={styles.input}
             />
           </div>
 
+          {/* Password */}
           <div style={styles.field}>
-            <label>Password</label>
+            <label style={styles.label}>Password</label>
 
             <div style={styles.passwordContainer}>
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 style={styles.passwordInput}
               />
 
@@ -40,31 +69,37 @@ export default function Login() {
             </div>
           </div>
 
+          {/* Remember me + Forgot password */}
           <div style={styles.options}>
             <label>
               <input type="checkbox" />
-              Remember me
+              {" "}Remember me
             </label>
 
-            <a href="#" style={styles.link}>
+            <button
+              type="button"
+              onClick={() => alert("Password reset coming soon.")}
+              style={styles.linkButton}
+            >
               Forgot Password?
-            </a>
+            </button>
           </div>
 
+          {/* Login button */}
           <button
             type="submit"
             style={styles.loginButton}
-            className="hover:bg-blue-700 hover:scale-105 transition duration-300"
           >
             Login
           </button>
         </form>
 
-        <p style={styles.signup}>
+        {/* Sign up */}
+        <p style={styles.signupText}>
           Don't have an account?{" "}
-          <a href="#" style={styles.link}>
+          <Link to="/signup" style={styles.signupLink}>
             Sign Up
-          </a>
+          </Link>
         </p>
       </div>
     </div>
@@ -74,20 +109,21 @@ export default function Login() {
 const styles = {
   container: {
     minHeight: "100vh",
+    background: "#f5f7fb",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f7fb",
-    padding: "20px",
+    padding: "30px",
+    fontFamily: "Arial, sans-serif",
   },
 
   card: {
     width: "100%",
-    maxWidth: "420px",
-    backgroundColor: "white",
-    padding: "40px",
-    borderRadius: "15px",
-    boxShadow: "0 5px 20px rgba(0, 0, 0, 0.08)",
+    maxWidth: "450px",
+    background: "white",
+    padding: "35px",
+    borderRadius: "12px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
   },
 
   title: {
@@ -97,7 +133,7 @@ const styles = {
 
   subtitle: {
     textAlign: "center",
-    color: "#777",
+    color: "#666",
     marginBottom: "30px",
   },
 
@@ -105,32 +141,40 @@ const styles = {
     marginBottom: "20px",
   },
 
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    fontWeight: "600",
+  },
+
   input: {
     width: "100%",
-    padding: "12px",
-    marginTop: "8px",
+    padding: "13px",
     border: "1px solid #ddd",
     borderRadius: "8px",
+    fontSize: "15px",
     boxSizing: "border-box",
   },
 
   passwordContainer: {
     display: "flex",
-    marginTop: "8px",
+    gap: "8px",
   },
 
   passwordInput: {
     flex: 1,
-    padding: "12px",
+    padding: "13px",
     border: "1px solid #ddd",
-    borderRadius: "8px 0 0 8px",
+    borderRadius: "8px",
+    fontSize: "15px",
+    minWidth: 0,
   },
 
   showButton: {
-    border: "1px solid #ddd",
-    backgroundColor: "#f5f5f5",
-    padding: "0 12px",
-    borderRadius: "0 8px 8px 0",
+    padding: "0 15px",
+    border: "none",
+    borderRadius: "8px",
+    background: "#eee",
     cursor: "pointer",
   },
 
@@ -142,15 +186,18 @@ const styles = {
     fontSize: "14px",
   },
 
-  link: {
+  linkButton: {
+    background: "none",
+    border: "none",
     color: "#e099cc",
-    textDecoration: "none",
+    cursor: "pointer",
+    fontSize: "14px",
   },
 
   loginButton: {
     width: "100%",
     padding: "13px",
-    backgroundColor: "#fd0c08",
+    backgroundColor: "#e099cc",
     color: "white",
     border: "none",
     borderRadius: "8px",
@@ -159,9 +206,15 @@ const styles = {
     fontWeight: "bold",
   },
 
-  signup: {
+  signupText: {
     textAlign: "center",
     marginTop: "25px",
     color: "#666",
+  },
+
+  signupLink: {
+    color: "#e099cc",
+    fontWeight: "bold",
+    textDecoration: "none",
   },
 };
