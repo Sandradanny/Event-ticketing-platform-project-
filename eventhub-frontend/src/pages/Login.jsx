@@ -68,7 +68,7 @@ export default function Login() {
       <div style={styles.card}>
 
         <h2 style={styles.title}>
-          Welcome Back!
+          Welcome Back Cutie🥰!
         </h2>
 
         <p style={styles.subtitle}>

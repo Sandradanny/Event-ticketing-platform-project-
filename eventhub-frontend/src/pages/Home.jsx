@@ -1,22 +1,8 @@
+```jsx
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
-  <div>
-  <h3>Sign In</h3>
-
-  <button
-    onClick={() => navigate("/login?role=user")}
-  >
-    Sign in as User
-  </button>
-
-  <button
-    onClick={() => navigate("/login?role=admin")}
-  >
-    Sign in as Admin
-  </button>
-</div>
 
   return (
     <div style={styles.hero}>
@@ -34,9 +20,29 @@ export default function Home() {
           with ease.
         </p>
 
+        {/* Login Options */}
+        <div style={styles.loginBox}>
+          <h3 style={styles.loginTitle}>Sign In to Continue</h3>
+
+          <button
+            style={styles.userButton}
+            onClick={() => navigate("/login?role=user")}
+          >
+            Sign in as User
+          </button>
+
+          <button
+            style={styles.adminButton}
+            onClick={() => navigate("/login?role=admin")}
+          >
+            Sign in as Admin
+          </button>
+        </div>
+
+        {/* Explore Events */}
         <button
           style={styles.button}
-          onClick={() => navigate("/events")}
+          onClick={() => navigate("/login?role=user")}
         >
           Explore Events
         </button>
@@ -84,8 +90,45 @@ const styles = {
   subtitle: {
     fontSize: "20px",
     lineHeight: "1.6",
-    marginBottom: "35px",
+    marginBottom: "30px",
     color: "#f1f1f1",
+  },
+
+  loginBox: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "25px",
+  },
+
+  loginTitle: {
+    fontSize: "22px",
+    marginBottom: "5px",
+  },
+
+  userButton: {
+    width: "220px",
+    padding: "13px 20px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "white",
+    backgroundColor: "#e099cc",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+  },
+
+  adminButton: {
+    width: "220px",
+    padding: "13px 20px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#333",
+    backgroundColor: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
   },
 
   button: {
@@ -99,3 +142,4 @@ const styles = {
     cursor: "pointer",
   },
 };
+```
