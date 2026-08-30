@@ -4,14 +4,9 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
 
-  // User or Admin
   const [role, setRole] = useState("user");
-
-  // Form values
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Login state
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -29,8 +24,6 @@ export default function Login() {
           headers: {
             "Content-Type": "application/json",
           },
-
-          // Send email and password to backend
           body: JSON.stringify({
             email: email,
             password: password,
@@ -46,15 +39,11 @@ export default function Login() {
 
       console.log("Login successful:", data);
 
-      // Save logged-in user
       localStorage.setItem("user", JSON.stringify(data));
-
-      // Save selected role
       localStorage.setItem("selectedRole", role);
 
       setMessage("Login successful!");
 
-      // Redirect based on selected role
       setTimeout(() => {
         if (role === "admin") {
           navigate("/admin/dashboard");
@@ -76,10 +65,8 @@ export default function Login() {
 
   return (
     <div style={styles.container}>
-
       <div style={styles.card}>
 
-        {/* TITLE */}
         <h2 style={styles.title}>
           Welcome Back!
         </h2>
@@ -88,18 +75,14 @@ export default function Login() {
           Sign in to continue
         </p>
 
-
-        {/* =========================
-            ROLE SELECTION
-        ========================== */}
-
+        {/* SIGN IN AS */}
         <p style={styles.roleTitle}>
           Sign in as
         </p>
 
         <div style={styles.roleContainer}>
 
-          {/* USER BUTTON */}
+          {/* USER */}
           <button
             type="button"
             onClick={() => {
@@ -112,12 +95,10 @@ export default function Login() {
             }}
           >
             <span style={styles.roleIcon}>👤</span>
-
             <span>User</span>
           </button>
 
-
-          {/* ADMIN BUTTON */}
+          {/* ADMIN */}
           <button
             type="button"
             onClick={() => {
@@ -130,34 +111,23 @@ export default function Login() {
             }}
           >
             <span style={styles.roleIcon}>🛡️</span>
-
             <span>Admin</span>
           </button>
 
         </div>
 
-
         {/* SELECTED ROLE */}
         <div style={styles.roleBox}>
-
           You are signing in as{" "}
-
           <strong>
             {role === "admin" ? "Admin" : "User"}
           </strong>
-
         </div>
-
-
-        {/* =========================
-            LOGIN FORM
-        ========================== */}
 
         <form onSubmit={handleLogin}>
 
           {/* EMAIL */}
           <div style={styles.field}>
-
             <label style={styles.label}>
               Email Address
             </label>
@@ -170,13 +140,10 @@ export default function Login() {
               required
               style={styles.input}
             />
-
           </div>
-
 
           {/* PASSWORD */}
           <div style={styles.field}>
-
             <label style={styles.label}>
               Password
             </label>
@@ -189,26 +156,20 @@ export default function Login() {
               required
               style={styles.input}
             />
-
           </div>
-
 
           {/* OPTIONS */}
           <div style={styles.options}>
 
-            <label style={styles.remember}>
+            <label>
               <input type="checkbox" />
-
               {" "}Remember me
             </label>
-
 
             <button
               type="button"
               onClick={() =>
-                setMessage(
-                  "Password reset is not available yet."
-                )
+                setMessage("Password reset is not available yet.")
               }
               style={styles.forgotButton}
             >
@@ -217,28 +178,22 @@ export default function Login() {
 
           </div>
 
-
-          {/* LOGIN BUTTON */}
+          {/* LOGIN */}
           <button
             type="submit"
             disabled={loading}
-            style={{
-              ...styles.loginButton,
-              opacity: loading ? 0.7 : 1,
-            }}
+            style={styles.loginButton}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
 
-
         {/* MESSAGE */}
         {message && (
           <p
             style={{
               ...styles.message,
-
               color: message.includes("successful")
                 ? "green"
                 : "red",
@@ -248,11 +203,9 @@ export default function Login() {
           </p>
         )}
 
-
-        {/* SIGN UP - USER ONLY */}
+        {/* SIGN UP */}
         {role === "user" && (
           <p style={styles.signupText}>
-
             Don't have an account?{" "}
 
             <button
@@ -262,12 +215,10 @@ export default function Login() {
             >
               Sign Up
             </button>
-
           </p>
         )}
 
-
-        {/* BACK TO HOME */}
+        {/* BACK */}
         <button
           type="button"
           onClick={() => navigate("/")}
@@ -277,274 +228,158 @@ export default function Login() {
         </button>
 
       </div>
-
     </div>
   );
 }
 
-
-/* ==========================================
-   STYLES
-========================================== */
-
 const styles = {
-
   container: {
     minHeight: "100vh",
-
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-
     backgroundColor: "#f5f7ff",
-
     padding: "20px",
   },
-
 
   card: {
     width: "100%",
     maxWidth: "420px",
-
     backgroundColor: "white",
-
     padding: "35px",
-
     borderRadius: "15px",
-
-    boxShadow:
-      "0 5px 20px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 5px 20px rgba(0, 0, 0, 0.1)",
   },
-
 
   title: {
     textAlign: "center",
-
     marginBottom: "8px",
-
     fontSize: "28px",
   },
 
-
   subtitle: {
     textAlign: "center",
-
     color: "#666",
-
     marginBottom: "25px",
   },
 
-
-  /* ROLE */
-
   roleTitle: {
     fontWeight: "600",
-
     marginBottom: "10px",
   },
 
-
   roleContainer: {
     display: "flex",
-
     gap: "12px",
-
     marginBottom: "15px",
   },
 
-
   roleButton: {
     flex: 1,
-
     padding: "15px",
-
     border: "1px solid #ddd",
-
     borderRadius: "10px",
-
     backgroundColor: "white",
-
     cursor: "pointer",
-
     display: "flex",
-
     flexDirection: "column",
-
     alignItems: "center",
-
     gap: "7px",
-
     fontSize: "15px",
-
     fontWeight: "600",
   },
 
-
   activeRole: {
     border: "2px solid #5267e8",
-
     backgroundColor: "#f0f2ff",
-
     color: "#5267e8",
   },
-
 
   roleIcon: {
     fontSize: "25px",
   },
 
-
   roleBox: {
     textAlign: "center",
-
     backgroundColor: "#f0f2ff",
-
     padding: "10px",
-
     borderRadius: "8px",
-
     marginBottom: "22px",
-
     fontSize: "14px",
-
     color: "#444",
   },
-
-
-  /* FORM */
 
   field: {
     marginBottom: "18px",
   },
 
-
   label: {
     display: "block",
-
     marginBottom: "7px",
-
     fontWeight: "500",
   },
 
-
   input: {
     width: "100%",
-
     padding: "12px",
-
     border: "1px solid #ccc",
-
     borderRadius: "8px",
-
     boxSizing: "border-box",
-
     fontSize: "14px",
   },
-
-
-  /* OPTIONS */
 
   options: {
     display: "flex",
-
     justifyContent: "space-between",
-
     alignItems: "center",
-
     marginBottom: "20px",
-
     fontSize: "14px",
   },
-
-
-  remember: {
-    display: "flex",
-
-    alignItems: "center",
-
-    gap: "4px",
-  },
-
 
   forgotButton: {
     border: "none",
-
     background: "none",
-
     color: "#5267e8",
-
     cursor: "pointer",
   },
-
-
-  /* LOGIN */
 
   loginButton: {
     width: "100%",
-
     padding: "13px",
-
     backgroundColor: "#5267e8",
-
     color: "white",
-
     border: "none",
-
     borderRadius: "8px",
-
     cursor: "pointer",
-
     fontSize: "16px",
-
     fontWeight: "bold",
   },
-
 
   message: {
     textAlign: "center",
-
     marginTop: "15px",
-
     fontSize: "14px",
   },
 
-
-  /* SIGN UP */
-
   signupText: {
     textAlign: "center",
-
     marginTop: "20px",
   },
 
-
   signupButton: {
     border: "none",
-
     background: "none",
-
     color: "#5267e8",
-
     cursor: "pointer",
-
     fontWeight: "bold",
   },
 
-
-  /* BACK */
-
   backButton: {
     display: "block",
-
     margin: "15px auto 0",
-
     border: "none",
-
     background: "none",
-
     color: "#666",
-
     cursor: "pointer",
   },
-
 };
