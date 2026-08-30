@@ -1,76 +1,136 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [showPassword, setShowPassword] = useState(false);
+  // Gets the role selected from the homepage
+  const role = searchParams.get("role") || "user";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      alert("Please enter your email and password.");
-      return;
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        "https://tmanagerapi-1.onrender.com/api/User/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          // IMPORTANT:
+          // Only email and password are sent.
+          // We are NOT sending role.
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid email or password");
+      }
+
+      console.log("Login successful:", data);
+
+      // Save the response from the backend
+      localStorage.setItem("user", JSON.stringify(data));
+
+      // Save which login option was selected
+      localStorage.setItem("selectedRole", role);
+
+      setMessage("Login successful!");
+
+      // Send user to events page
+      setTimeout(() => {
+        navigate("/events");
+      }, 700);
+
+    } catch (error) {
+      console.error("Login error:", error);
+
+      setMessage(
+        error.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    // Temporary frontend login
-    alert("Login successful!");
-
-    // Take the user back to the events page
-    navigate("/events");
   };
 
   return (
     <div style={styles.container}>
+
       <div style={styles.card}>
-        <h1 style={styles.title}>Welcome Back Cutie🥰</h1>
+
+        {/* TITLE */}
+        <h2 style={styles.title}>
+          {role === "admin" ? "Admin Login" : "User Login"}
+        </h2>
 
         <p style={styles.subtitle}>
-          Login to continue to your account
+          {role === "admin"
+            ? "Login to access your admin account"
+            : "Login to continue to your account"}
         </p>
 
+        {/* SELECTED ROLE */}
+        <div style={styles.roleBox}>
+          You are signing in as{" "}
+          <strong>
+            {role === "admin" ? "Admin" : "User"}
+          </strong>
+        </div>
+
         <form onSubmit={handleLogin}>
-          {/* Email */}
+
+          {/* EMAIL */}
           <div style={styles.field}>
-            <label style={styles.label}>Email Address</label>
+
+            <label>Email Address</label>
 
             <input
               type="email"
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               style={styles.input}
             />
+
           </div>
 
-          {/* Password */}
+          {/* PASSWORD */}
           <div style={styles.field}>
-            <label style={styles.label}>Password</label>
 
-            <div style={styles.passwordContainer}>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={styles.passwordInput}
-              />
+            <label>Password</label>
 
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={styles.showButton}
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={styles.input}
+            />
+
           </div>
 
-          {/* Remember me + Forgot password */}
+          {/* OPTIONS */}
           <div style={styles.options}>
+
             <label>
               <input type="checkbox" />
               {" "}Remember me
@@ -78,30 +138,62 @@ export default function Login() {
 
             <button
               type="button"
-              onClick={() => alert("Password reset coming soon.")}
-              style={styles.linkButton}
+              onClick={() =>
+                setMessage(
+                  "Password reset is not available yet."
+                )
+              }
+              style={styles.forgotButton}
             >
               Forgot Password?
             </button>
+
           </div>
 
-          {/* Login button */}
+          {/* LOGIN BUTTON */}
           <button
             type="submit"
+            disabled={loading}
             style={styles.loginButton}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
+
         </form>
 
-        {/* Sign up */}
+        {/* MESSAGE */}
+        {message && (
+          <p style={styles.message}>
+            {message}
+          </p>
+        )}
+
+        {/* SIGN UP */}
         <p style={styles.signupText}>
+
           Don't have an account?{" "}
-          <Link to="/signup" style={styles.signupLink}>
+
+          <button
+            type="button"
+            onClick={() => navigate("/signup")}
+            style={styles.signupButton}
+          >
             Sign Up
-          </Link>
+          </button>
+
         </p>
+
+        {/* CHANGE LOGIN TYPE */}
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          style={styles.backButton}
+        >
+          ← Back to Home
+        </button>
+
       </div>
+
     </div>
   );
 }
@@ -109,21 +201,20 @@ export default function Login() {
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "#f5f7fb",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: "30px",
-    fontFamily: "Arial, sans-serif",
+    backgroundColor: "#f5f7ff",
+    padding: "20px",
   },
 
   card: {
     width: "100%",
-    maxWidth: "450px",
-    background: "white",
+    maxWidth: "420px",
+    backgroundColor: "white",
     padding: "35px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+    borderRadius: "15px",
+    boxShadow: "0 5px 20px rgba(0, 0, 0, 0.1)",
   },
 
   title: {
@@ -134,70 +225,49 @@ const styles = {
   subtitle: {
     textAlign: "center",
     color: "#666",
-    marginBottom: "30px",
-  },
-
-  field: {
     marginBottom: "20px",
   },
 
-  label: {
-    display: "block",
-    marginBottom: "8px",
-    fontWeight: "600",
+  roleBox: {
+    textAlign: "center",
+    backgroundColor: "#f0f2ff",
+    padding: "10px",
+    borderRadius: "8px",
+    marginBottom: "20px",
+  },
+
+  field: {
+    marginBottom: "18px",
   },
 
   input: {
     width: "100%",
-    padding: "13px",
-    border: "1px solid #ddd",
+    padding: "12px",
+    marginTop: "7px",
+    border: "1px solid #ccc",
     borderRadius: "8px",
-    fontSize: "15px",
     boxSizing: "border-box",
-  },
-
-  passwordContainer: {
-    display: "flex",
-    gap: "8px",
-  },
-
-  passwordInput: {
-    flex: 1,
-    padding: "13px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    fontSize: "15px",
-    minWidth: 0,
-  },
-
-  showButton: {
-    padding: "0 15px",
-    border: "none",
-    borderRadius: "8px",
-    background: "#eee",
-    cursor: "pointer",
   },
 
   options: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "25px",
+    marginBottom: "20px",
     fontSize: "14px",
   },
 
-  linkButton: {
-    background: "none",
+  forgotButton: {
     border: "none",
-    color: "#e099cc",
+    background: "none",
+    color: "#5267e8",
     cursor: "pointer",
-    fontSize: "14px",
   },
 
   loginButton: {
     width: "100%",
     padding: "13px",
-    backgroundColor: "#e099cc",
+    backgroundColor: "#5267e8",
     color: "white",
     border: "none",
     borderRadius: "8px",
@@ -206,15 +276,30 @@ const styles = {
     fontWeight: "bold",
   },
 
-  signupText: {
+  message: {
     textAlign: "center",
-    marginTop: "25px",
-    color: "#666",
+    marginTop: "15px",
   },
 
-  signupLink: {
-    color: "#e099cc",
+  signupText: {
+    textAlign: "center",
+    marginTop: "20px",
+  },
+
+  signupButton: {
+    border: "none",
+    background: "none",
+    color: "#5267e8",
+    cursor: "pointer",
     fontWeight: "bold",
-    textDecoration: "none",
+  },
+
+  backButton: {
+    display: "block",
+    margin: "15px auto 0",
+    border: "none",
+    background: "none",
+    color: "#666",
+    cursor: "pointer",
   },
 };
