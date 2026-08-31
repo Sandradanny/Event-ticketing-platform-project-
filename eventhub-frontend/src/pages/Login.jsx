@@ -18,7 +18,7 @@ export default function Login() {
 
     try {
       const response = await fetch(
-        "https://tmanagerapi-1.onrender.com/api/User/login",
+  "https://eventmanagerapi-1.onrender.com/api/User/login",
         {
           method: "POST",
           headers: {
