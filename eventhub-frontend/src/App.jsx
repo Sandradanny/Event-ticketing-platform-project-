@@ -31,21 +31,18 @@ function App() {
 
       {/* LANDING PAGE */}
       <Route
-        path="/"
-        element={<Home />}
+        path="/" element={<Home />}
       />
 
 
       {/* LOGIN */}
-      <Route
-        path="/login"
+      <Route path="/login"
         element={<Login />}
       />
 
 
       {/* SIGN UP */}
-      <Route
-        path="/signup"
+      <Route path="/signup"
         element={<Signup />}
       />
 

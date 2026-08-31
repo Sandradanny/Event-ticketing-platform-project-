@@ -19,7 +19,6 @@ export default function Home() {
           with ease.
         </p>
 
-        {/* Login Options */}
         <div style={styles.loginBox}>
           <h3 style={styles.loginTitle}>Sign In to Continue</h3>
 
@@ -38,12 +37,15 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Explore Events */}
+        <p style={styles.registerText}>
+          Don't have an account?
+        </p>
+
         <button
-          style={styles.button}
-          onClick={() => navigate("/login?role=user")}
+          style={styles.registerButton}
+          onClick={() => navigate("/signup")}
         >
-          Explore Events
+          Create Account
         </button>
       </div>
     </div>
@@ -98,7 +100,7 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     gap: "12px",
-    marginBottom: "25px",
+    marginBottom: "20px",
   },
 
   loginTitle: {
@@ -130,13 +132,17 @@ const styles = {
     cursor: "pointer",
   },
 
-  button: {
-    padding: "15px 35px",
-    fontSize: "17px",
+  registerText: {
+    marginBottom: "8px",
+  },
+
+  registerButton: {
+    padding: "12px 28px",
+    fontSize: "15px",
     fontWeight: "bold",
     color: "white",
-    backgroundColor: "#e099cc",
-    border: "none",
+    backgroundColor: "transparent",
+    border: "1px solid white",
     borderRadius: "8px",
     cursor: "pointer",
   },
