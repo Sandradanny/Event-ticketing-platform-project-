@@ -16,25 +16,25 @@ export default function Signup() {
 
     setMessage("");
 
-    // Check fields
+    // Check that all fields are filled
     if (!name || !email || !password || !confirmPassword) {
       setMessage("Please fill in all fields.");
       return;
     }
 
-    // Check password
+    // Check passwords
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
       return;
     }
 
-    // Split full name into first and last name
+    // Split full name into first name and last name
     const nameParts = name.trim().split(/\s+/);
 
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(" ");
 
-    // Make sure a last name exists
+    // Require both first and last name
     if (!lastName) {
       setMessage("Please enter your first and last name.");
       return;
@@ -44,12 +44,15 @@ export default function Signup() {
 
     try {
       const response = await fetch(
-        "https://tmanagerapi-1.onrender.com/api/User/register",
+        "https://eventmanagerapi-1.onrender.com/api/User/register",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
+
           body: JSON.stringify({
             firstName: firstName,
             lastName: lastName,
@@ -60,19 +63,24 @@ export default function Signup() {
         }
       );
 
+      // Get response from backend
       const data = await response.json();
 
-      console.log("Register response:", data);
+      console.log("Registration response:", data);
 
+      // Check if backend returned an error
       if (!response.ok) {
         throw new Error(
-          data.message || "Registration failed. Please try again."
+          data.message ||
+            data.title ||
+            "Registration failed. Please try again."
         );
       }
 
+      // Registration successful
       setMessage("Account created successfully!");
 
-      // Go to login after successful registration
+      // Wait briefly, then go to login
       setTimeout(() => {
         navigate("/login");
       }, 1000);
@@ -80,7 +88,7 @@ export default function Signup() {
       console.error("Registration error:", error);
 
       setMessage(
-        error.message || "Unable to create account."
+        error.message || "Failed to create account. Please try again."
       );
     } finally {
       setLoading(false);
@@ -91,7 +99,9 @@ export default function Signup() {
     <div style={styles.container}>
       <div style={styles.card}>
 
-        <h1 style={styles.title}>Create Account</h1>
+        <h1 style={styles.title}>
+          Create Account
+        </h1>
 
         <p style={styles.subtitle}>
           Sign up to start discovering and attending events.
@@ -99,7 +109,7 @@ export default function Signup() {
 
         <form onSubmit={handleSignup}>
 
-          {/* NAME */}
+          {/* FULL NAME */}
           <div style={styles.field}>
             <label style={styles.label}>
               Full Name
@@ -107,7 +117,7 @@ export default function Signup() {
 
             <input
               type="text"
-              placeholder="Enter your full name"
+              placeholder="Enter your first and last name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -165,11 +175,14 @@ export default function Signup() {
             />
           </div>
 
-          {/* BUTTON */}
+          {/* SIGN UP BUTTON */}
           <button
             type="submit"
             disabled={loading}
-            style={styles.signupButton}
+            style={{
+              ...styles.signupButton,
+              opacity: loading ? 0.7 : 1,
+            }}
           >
             {loading
               ? "Creating Account..."
@@ -185,7 +198,7 @@ export default function Signup() {
           </p>
         )}
 
-        {/* LOGIN LINK */}
+        {/* LOGIN */}
         <p style={styles.loginText}>
           Already have an account?{" "}
 
