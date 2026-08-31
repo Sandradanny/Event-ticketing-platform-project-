@@ -8,28 +8,73 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
+    setMessage("");
+
     if (!name || !email || !password || !confirmPassword) {
-      alert("Please fill in all fields.");
+      setMessage("Please fill in all fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      setMessage("Passwords do not match.");
       return;
     }
 
-    alert("Account created successfully!");
+    setLoading(true);
 
-    navigate("/login");
+    try {
+      const response = await fetch(
+        "https://tmanagerapi-1.onrender.com/api/User/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("Register response:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Registration failed. Please try again."
+        );
+      }
+
+      setMessage("Account created successfully!");
+
+      // Go to login after successful registration
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      setMessage(
+        error.message || "Unable to create account."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+
         <h1 style={styles.title}>Create Account</h1>
 
         <p style={styles.subtitle}>
@@ -37,61 +82,91 @@ export default function Signup() {
         </p>
 
         <form onSubmit={handleSignup}>
+
+          {/* NAME */}
           <div style={styles.field}>
             <label style={styles.label}>Full Name</label>
+
             <input
               type="text"
               placeholder="Enter your full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
               style={styles.input}
             />
           </div>
 
+          {/* EMAIL */}
           <div style={styles.field}>
             <label style={styles.label}>Email Address</label>
+
             <input
               type="email"
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               style={styles.input}
             />
           </div>
 
+          {/* PASSWORD */}
           <div style={styles.field}>
             <label style={styles.label}>Password</label>
+
             <input
               type="password"
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
               style={styles.input}
             />
           </div>
 
+          {/* CONFIRM PASSWORD */}
           <div style={styles.field}>
             <label style={styles.label}>Confirm Password</label>
+
             <input
               type="password"
               placeholder="Confirm your password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) =>
+                setConfirmPassword(e.target.value)
+              }
+              required
               style={styles.input}
             />
           </div>
 
-          <button type="submit" style={styles.signupButton}>
-            Create Account
+          {/* BUTTON */}
+          <button
+            type="submit"
+            disabled={loading}
+            style={styles.signupButton}
+          >
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
+
         </form>
+
+        {/* MESSAGE */}
+        {message && (
+          <p style={styles.message}>
+            {message}
+          </p>
+        )}
 
         <p style={styles.loginText}>
           Already have an account?{" "}
+
           <Link to="/login" style={styles.loginLink}>
             Login
           </Link>
         </p>
+
       </div>
     </div>
   );
@@ -158,6 +233,12 @@ const styles = {
     fontSize: "16px",
     fontWeight: "bold",
     marginTop: "10px",
+  },
+
+  message: {
+    textAlign: "center",
+    marginTop: "15px",
+    fontWeight: "500",
   },
 
   loginText: {

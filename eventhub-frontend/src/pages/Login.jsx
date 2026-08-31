@@ -90,7 +90,7 @@ export default function Login() {
 
         {/* TITLE */}
         <h2 style={styles.title}>
-          Welcome Back!
+          Welcome Back Cutie 🥰
         </h2>
 
         <p style={styles.subtitle}>
