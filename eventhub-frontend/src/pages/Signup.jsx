@@ -16,13 +16,27 @@ export default function Signup() {
 
     setMessage("");
 
+    // Check fields
     if (!name || !email || !password || !confirmPassword) {
       setMessage("Please fill in all fields.");
       return;
     }
 
+    // Check password
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
+      return;
+    }
+
+    // Split full name into first and last name
+    const nameParts = name.trim().split(/\s+/);
+
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(" ");
+
+    // Make sure a last name exists
+    if (!lastName) {
+      setMessage("Please enter your first and last name.");
       return;
     }
 
@@ -37,9 +51,11 @@ export default function Signup() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: name,
+            firstName: firstName,
+            lastName: lastName,
             email: email,
             password: password,
+            role: 1,
           }),
         }
       );
@@ -60,9 +76,9 @@ export default function Signup() {
       setTimeout(() => {
         navigate("/login");
       }, 1000);
-
     } catch (error) {
       console.error("Registration error:", error);
+
       setMessage(
         error.message || "Unable to create account."
       );
@@ -85,7 +101,9 @@ export default function Signup() {
 
           {/* NAME */}
           <div style={styles.field}>
-            <label style={styles.label}>Full Name</label>
+            <label style={styles.label}>
+              Full Name
+            </label>
 
             <input
               type="text"
@@ -99,7 +117,9 @@ export default function Signup() {
 
           {/* EMAIL */}
           <div style={styles.field}>
-            <label style={styles.label}>Email Address</label>
+            <label style={styles.label}>
+              Email Address
+            </label>
 
             <input
               type="email"
@@ -113,7 +133,9 @@ export default function Signup() {
 
           {/* PASSWORD */}
           <div style={styles.field}>
-            <label style={styles.label}>Password</label>
+            <label style={styles.label}>
+              Password
+            </label>
 
             <input
               type="password"
@@ -127,7 +149,9 @@ export default function Signup() {
 
           {/* CONFIRM PASSWORD */}
           <div style={styles.field}>
-            <label style={styles.label}>Confirm Password</label>
+            <label style={styles.label}>
+              Confirm Password
+            </label>
 
             <input
               type="password"
@@ -147,7 +171,9 @@ export default function Signup() {
             disabled={loading}
             style={styles.signupButton}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading
+              ? "Creating Account..."
+              : "Create Account"}
           </button>
 
         </form>
@@ -159,10 +185,14 @@ export default function Signup() {
           </p>
         )}
 
+        {/* LOGIN LINK */}
         <p style={styles.loginText}>
           Already have an account?{" "}
 
-          <Link to="/login" style={styles.loginLink}>
+          <Link
+            to="/login"
+            style={styles.loginLink}
+          >
             Login
           </Link>
         </p>
