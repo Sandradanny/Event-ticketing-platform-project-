@@ -25,25 +25,42 @@ export default function Login() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: email,
+            email: email.trim(),
             password: password,
           }),
         }
       );
 
-      const data = await response.json();
+      const responseText = await response.text();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Invalid email or password");
+      console.log("Login status:", response.status);
+      console.log("Login response:", responseText);
+
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        data = responseText;
       }
 
-      console.log("Login successful:", data);
+      if (!response.ok) {
+        throw new Error(
+          typeof data === "object"
+            ? data.message || data.title || "Login failed"
+            : data || "Login failed"
+        );
+      }
 
+      // Save the information returned by the backend
       localStorage.setItem("user", JSON.stringify(data));
+
+      // Save the selected login type
       localStorage.setItem("selectedRole", role);
 
       setMessage("Login successful!");
 
+      // Redirect based on selected login type
       setTimeout(() => {
         if (role === "admin") {
           navigate("/admin/dashboard");
@@ -53,11 +70,15 @@ export default function Login() {
       }, 700);
 
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("LOGIN ERROR:", error);
 
-      setMessage(
-        error.message || "Something went wrong. Please try again."
-      );
+      if (error.message === "Failed to fetch") {
+        setMessage(
+          "Unable to connect to the server. Please check the API connection."
+        );
+      } else {
+        setMessage(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -67,8 +88,9 @@ export default function Login() {
     <div style={styles.container}>
       <div style={styles.card}>
 
+        {/* TITLE */}
         <h2 style={styles.title}>
-          Welcome Back Cutie🥰!
+          Welcome Back!
         </h2>
 
         <p style={styles.subtitle}>
@@ -124,6 +146,7 @@ export default function Login() {
           </strong>
         </div>
 
+        {/* LOGIN FORM */}
         <form onSubmit={handleLogin}>
 
           {/* EMAIL */}
@@ -169,7 +192,9 @@ export default function Login() {
             <button
               type="button"
               onClick={() =>
-                setMessage("Password reset is not available yet.")
+                setMessage(
+                  "Password reset is not available yet."
+                )
               }
               style={styles.forgotButton}
             >
@@ -178,11 +203,14 @@ export default function Login() {
 
           </div>
 
-          {/* LOGIN */}
+          {/* LOGIN BUTTON */}
           <button
             type="submit"
             disabled={loading}
-            style={styles.loginButton}
+            style={{
+              ...styles.loginButton,
+              opacity: loading ? 0.7 : 1,
+            }}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -203,7 +231,7 @@ export default function Login() {
           </p>
         )}
 
-        {/* SIGN UP */}
+        {/* SIGN UP - USER ONLY */}
         {role === "user" && (
           <p style={styles.signupText}>
             Don't have an account?{" "}
@@ -213,12 +241,12 @@ export default function Login() {
               onClick={() => navigate("/signup")}
               style={styles.signupButton}
             >
-              Sign Up
+              Create Account
             </button>
           </p>
         )}
 
-        {/* BACK */}
+        {/* BACK TO HOME */}
         <button
           type="button"
           onClick={() => navigate("/")}
