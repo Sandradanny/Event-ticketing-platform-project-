@@ -5,6 +5,7 @@ import SearchResults from "./pages/SearchResults";
 import EventDetail from "./pages/EventDetail";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import CreateEvent from "./pages/CreateEvent";
 
 
 // ===============================
@@ -40,6 +41,7 @@ function App() {
       <Route path="/signup"
         element={<Signup />}
       />
+      <Route path="create-event" element={<CreateEvent />} />
       {/* EVENTS - LOGIN REQUIRED */}
       <Route
         path="/events"
