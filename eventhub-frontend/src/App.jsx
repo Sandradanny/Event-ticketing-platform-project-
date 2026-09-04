@@ -28,36 +28,22 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Routes>
-
       {/* LANDING PAGE */}
       <Route
         path="/" element={<Home />}
       />
-
-
       {/* LOGIN */}
       <Route path="/login"
         element={<Login />}
       />
-
-
       {/* SIGN UP */}
       <Route path="/signup"
         element={<Signup />}
       />
-
-
       {/* EVENTS - LOGIN REQUIRED */}
       <Route
         path="/events"
-        element={
-          <ProtectedRoute>
-            <SearchResults />
-          </ProtectedRoute>
-        }
-      />
-
-
+        element={<ProtectedRoute><SearchResults /></ProtectedRoute> }/>
       {/* EVENT DETAILS - LOGIN REQUIRED */}
       <Route
         path="/event/:id"

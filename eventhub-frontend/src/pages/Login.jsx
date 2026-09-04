@@ -18,7 +18,7 @@ export default function Login() {
 
     try {
       const response = await fetch(
-  "https://eventmanagerapi-1.onrender.com/api/User/login",
+        "https://eventmanagerapi-1.onrender.com/api/User/login",
         {
           method: "POST",
           headers: {
@@ -28,7 +28,7 @@ export default function Login() {
             email: email.trim(),
             password: password,
           }),
-        }
+        },
       );
 
       const responseText = await response.text();
@@ -48,16 +48,22 @@ export default function Login() {
         throw new Error(
           typeof data === "object"
             ? data.message || data.title || "Login failed"
-            : data || "Login failed"
+            : data || "Login failed",
         );
       }
 
       // Save the information returned by the backend
       localStorage.setItem("user", JSON.stringify(data));
 
+      // Save the token for authenticated API requests
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      localStorage.setItem("isLoggedIn", "true");
+
       // Save the selected login type
       localStorage.setItem("selectedRole", role);
-
       setMessage("Login successful!");
 
       // Redirect based on selected login type
@@ -68,13 +74,12 @@ export default function Login() {
           navigate("/events");
         }
       }, 700);
-
     } catch (error) {
       console.error("LOGIN ERROR:", error);
 
       if (error.message === "Failed to fetch") {
         setMessage(
-          "Unable to connect to the server. Please check the API connection."
+          "Unable to connect to the server. Please check the API connection.",
         );
       } else {
         setMessage(error.message);
@@ -87,23 +92,15 @@ export default function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-
         {/* TITLE */}
-        <h2 style={styles.title}>
-          Welcome Back Cutie 🥰
-        </h2>
+        <h2 style={styles.title}>Welcome Back Cutie 🥰</h2>
 
-        <p style={styles.subtitle}>
-          Sign in to continue
-        </p>
+        <p style={styles.subtitle}>Sign in to continue</p>
 
         {/* SIGN IN AS */}
-        <p style={styles.roleTitle}>
-          Sign in as
-        </p>
+        <p style={styles.roleTitle}>Sign in as</p>
 
         <div style={styles.roleContainer}>
-
           {/* USER */}
           <button
             type="button"
@@ -135,25 +132,19 @@ export default function Login() {
             <span style={styles.roleIcon}>🛡️</span>
             <span>Admin</span>
           </button>
-
         </div>
 
         {/* SELECTED ROLE */}
         <div style={styles.roleBox}>
           You are signing in as{" "}
-          <strong>
-            {role === "admin" ? "Admin" : "User"}
-          </strong>
+          <strong>{role === "admin" ? "Admin" : "User"}</strong>
         </div>
 
         {/* LOGIN FORM */}
         <form onSubmit={handleLogin}>
-
           {/* EMAIL */}
           <div style={styles.field}>
-            <label style={styles.label}>
-              Email Address
-            </label>
+            <label style={styles.label}>Email Address</label>
 
             <input
               type="email"
@@ -167,9 +158,7 @@ export default function Login() {
 
           {/* PASSWORD */}
           <div style={styles.field}>
-            <label style={styles.label}>
-              Password
-            </label>
+            <label style={styles.label}>Password</label>
 
             <input
               type="password"
@@ -183,24 +172,17 @@ export default function Login() {
 
           {/* OPTIONS */}
           <div style={styles.options}>
-
             <label>
-              <input type="checkbox" />
-              {" "}Remember me
+              <input type="checkbox" /> Remember me
             </label>
 
             <button
               type="button"
-              onClick={() =>
-                setMessage(
-                  "Password reset is not available yet."
-                )
-              }
+              onClick={() => setMessage("Password reset is not available yet.")}
               style={styles.forgotButton}
             >
               Forgot Password?
             </button>
-
           </div>
 
           {/* LOGIN BUTTON */}
@@ -214,7 +196,6 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
 
         {/* MESSAGE */}
@@ -222,9 +203,7 @@ export default function Login() {
           <p
             style={{
               ...styles.message,
-              color: message.includes("successful")
-                ? "green"
-                : "red",
+              color: message.includes("successful") ? "green" : "red",
             }}
           >
             {message}
@@ -235,7 +214,6 @@ export default function Login() {
         {role === "user" && (
           <p style={styles.signupText}>
             Don't have an account?{" "}
-
             <button
               type="button"
               onClick={() => navigate("/signup")}
@@ -254,7 +232,6 @@ export default function Login() {
         >
           ← Back to Home
         </button>
-
       </div>
     </div>
   );
