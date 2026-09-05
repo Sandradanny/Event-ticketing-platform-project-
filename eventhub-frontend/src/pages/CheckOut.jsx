@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
+import { Calendar, MapPin, Ticket, CreditCard, Lock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function CheckOut() {
-    const [ticketSelections, setTicketSelections] = useState({
-        general: 0,
-        vip: 0
-    })
+    const { eventId } = useParams();
+    const navigate = useNavigate();
+
+    const [eventInfo, setEventInfo] = useState(null);
+    const [ticketTypes, setTicketTypes] = useState([]);
+    const [ticketSelections, setTicketSelections] = useState({}); // { [ticketTypeId]: count }
 
     const [buyerInfo, setBuyerInfo] = useState({
         name: '',
         email: ''
-    })
-
-    const [status, setStatus] = useState('idle');
-    const [errors, setErrors] = useState({});
+    });
 
     const [paymentInfo, setPaymentInfo] = useState({
         cardNumber: '',
@@ -22,19 +22,52 @@ function CheckOut() {
         cvv: ''
     });
 
-    const navigate = useNavigate();
+    const [status, setStatus] = useState('idle');
+    const [errors, setErrors] = useState({});
 
-    function increment(ticketType) {
+    // Fetch Event Details & Real Ticket Types from Backend
+    useEffect(() => {
+        if (!eventId) return;
+
+        // 1. Fetch Event Info
+        fetch(`https://eventmanagerapi-1.onrender.com/api/Events/${eventId}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to load event');
+                return res.json();
+            })
+            .then(data => setEventInfo(data))
+            .catch(err => console.error('Error fetching event:', err));
+
+        // 2. Fetch Ticket Types for this Event
+        fetch(`https://eventmanagerapi-1.onrender.com/api/TicketType/event/${eventId}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to load ticket types');
+                return res.json();
+            })
+            .then(data => {
+                setTicketTypes(data);
+                // Initialize selection state for each ticket type
+                const initialSelections = {};
+                data.forEach(ticket => {
+                    const id = ticket.ticketTypeId || ticket.id;
+                    initialSelections[id] = 0;
+                });
+                setTicketSelections(initialSelections);
+            })
+            .catch(err => console.error('Error fetching ticket types:', err));
+    }, [eventId]);
+
+    function increment(ticketTypeId) {
         setTicketSelections(prev => ({
             ...prev,
-            [ticketType]: prev[ticketType] + 1
+            [ticketTypeId]: (prev[ticketTypeId] || 0) + 1
         }));
     }
 
-    function decrement(ticketType) {
+    function decrement(ticketTypeId) {
         setTicketSelections(prev => ({
             ...prev,
-            [ticketType]: Math.max(0, prev[ticketType] - 1)
+            [ticketTypeId]: Math.max(0, (prev[ticketTypeId] || 0) - 1)
         }));
     }
 
@@ -52,176 +85,245 @@ function CheckOut() {
         }));
     }
 
-    function handleSubmit() {
+    // Calculate total dynamic amount
+    const total = ticketTypes.reduce((acc, ticket) => {
+        const id = ticket.ticketTypeId || ticket.id;
+        const count = ticketSelections[id] || 0;
+        return acc + count * (ticket.price || 0);
+    }, 0);
+
+    async function handleSubmit() {
         const newErrors = {};
-        if (!buyerInfo.name) newErrors.name = true;
-        if (!buyerInfo.email) newErrors.email = true;
-        if (!paymentInfo.cardNumber) newErrors.cardNumber = true;
-        if (!paymentInfo.expiry) newErrors.expiry = true;
-        if (!paymentInfo.cvv) newErrors.cvv = true;
+        if (!buyerInfo.name.trim()) newErrors.name = true;
+        if (!buyerInfo.email.trim()) newErrors.email = true;
+        if (!paymentInfo.cardNumber.trim()) newErrors.cardNumber = true;
+        if (!paymentInfo.expiry.trim()) newErrors.expiry = true;
+        if (!paymentInfo.cvv.trim()) newErrors.cvv = true;
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
+        // Format items array expected by backend: [{ ticketTypeId, quantity }]
+        const items = Object.entries(ticketSelections)
+            .filter(([_, quantity]) => quantity > 0)
+            .map(([ticketTypeId, quantity]) => ({
+                ticketTypeId,
+                quantity
+            }));
+
+        if (items.length === 0) {
+            alert('Please select at least one ticket before proceeding.');
+            return;
+        }
+
         setErrors({});
         setStatus('processing');
 
-        setTimeout(() => {
-            const order = {
-                id: 'ord_' + Date.now(),
-                eventTitle: 'Afrobeats Night',
-                buyerName: buyerInfo.name,
-                buyerEmail: buyerInfo.email,
-                items: [
-                    { type: 'General', quantity: ticketSelections.general, unitPrice: generalPrice },
-                    { type: 'VIP', quantity: ticketSelections.vip, unitPrice: vipPrice }
-                ],
+        const bookingPayload = {
+            eventId: eventId,
+            items: items
+        };
+
+        try {
+            // Step 1: Reserve the tickets in backend
+            const reserveRes = await fetch('https://eventmanagerapi-1.onrender.com/api/Booking/reserve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bookingPayload)
+            });
+
+            if (!reserveRes.ok) {
+                const errorData = await reserveRes.text();
+                throw new Error(errorData || 'Failed to reserve booking');
+            }
+
+            const bookingData = await reserveRes.json();
+            const bookingId = bookingData.id || bookingData.bookingId;
+
+            // Step 2: Confirm payment record if bookingId is returned
+            if (bookingId) {
+                await fetch(`https://eventmanagerapi-1.onrender.com/api/Booking/${bookingId}/payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bookingId: bookingId,
+                        paymentMethod: 'Card',
+                        transactionReference: 'txn_' + Date.now()
+                    })
+                });
+            }
+
+            // Save order confirmation details locally for reference
+            localStorage.setItem('lastOrder', JSON.stringify({
+                booking: bookingData,
+                buyerInfo,
                 totalAmount: total,
-                createdAt: new Date().toISOString()
-            };
+                eventName: eventInfo?.eventName
+            }));
 
-            const tickets = [];
-
-            for (let i = 0; i < ticketSelections.general; i++) {
-                tickets.push({
-                    id: 'tkt_' + Date.now() + '_gen_' + i,
-                    eventTitle: 'Afrobeats Night',
-                    ticketType: 'General',
-                    ownerName: buyerInfo.name,
-                    orderId: order.id
-                });
-            }
-            for (let i = 0; i < ticketSelections.vip; i++) {
-                tickets.push({
-                    id: 'tkt_' + Date.now() + '_vip_' + i,
-                    eventTitle: 'Afrobeats Night',
-                    ticketType: 'VIP',
-                    ownerName: buyerInfo.name,
-                    orderId: order.id
-                });
-            }
-
-            localStorage.setItem('lastOrder', JSON.stringify({ order, tickets }));
-            const existingTickets = JSON.parse(localStorage.getItem('allTickets') || '[]');
-            const updatedTickets = [...existingTickets, ...tickets];
-            localStorage.setItem('allTickets', JSON.stringify(updatedTickets));
-
+            setStatus('success');
             navigate('/confirmation');
-        }, 2000);
+        } catch (err) {
+            console.error('Checkout error:', err);
+            alert('Failed to complete checkout. Please check the details and try again.');
+            setStatus('idle');
+        }
     }
-
-    const generalPrice = 5000;
-    const vipPrice = 15000;
-    const total = (ticketSelections.general * generalPrice) + (ticketSelections.vip * vipPrice);
 
     return (
         <>
-           <Navbar/>
-        <div className="max-w-xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-indigo-600 text-center mb-6">Checkout</h1>
+            <Navbar />
+            <div className="max-w-xl mx-auto p-6">
+                <h1 className="text-3xl font-bold text-[#00bfff] text-center mb-6">Checkout</h1>
 
-            <section className="bg-indigo-500 rounded-2xl shadow-lg p-5 mb-5">
-                <img
-                    src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600"
-                    alt="Afrobeats Night"
-                    className="w-full rounded-lg mb-3"
-                />
-                <h2 className="text-white text-xl font-semibold">Afrobeats Night</h2>
-                <p className="text-white">Date: September 20, 2026</p>
-                <p className="text-white">Venue: Eko Covention Centre</p>
-            </section>
+                {/* Event Summary */}
+                <section className="bg-[#00bfff] rounded-2xl shadow-lg p-5 mb-5">
+                    <img
+                        src={eventInfo?.imageUrl || "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600"}
+                        alt={eventInfo?.eventName || "Event banner"}
+                        className="w-full rounded-lg mb-3 object-cover h-48"
+                    />
+                    <h2 className="text-white text-xl font-semibold">{eventInfo?.eventName || 'Loading event...'}</h2>
+                    <p className="text-white flex items-center gap-2 mt-1">
+                        <Calendar size={16} /> Date: {eventInfo?.eventDate ? new Date(eventInfo.eventDate).toLocaleDateString() : 'N/A'}
+                    </p>
+                    <p className="text-white flex items-center gap-2 mt-1">
+                        <MapPin size={16} /> Venue: {eventInfo?.eventvenue || 'N/A'}
+                    </p>
+                </section>
 
-            <section className="bg-indigo-500 rounded-2xl shadow-lg p-5 mb-5">
-                <h3 className="text-white text-lg font-semibold mb-3">Ticket Type</h3>
+                {/* Dynamic Ticket Types */}
+                <section className="bg-[#00bfff] rounded-2xl shadow-lg p-5 mb-5">
+                    <h3 className="text-white text-lg font-semibold mb-3 flex items-center gap-2">
+                        <Ticket size={20} /> Ticket Types
+                    </h3>
 
-                <div className="flex items-center justify-between text-white mb-2">
-                    <p>General - #5,000</p>
-                    <div className="flex items-center gap-2">
-                        <button className="bg-gray-800 w-8 h-8 rounded" onClick={() => decrement('general')}>-</button>
-                        <span>{ticketSelections.general}</span>
-                        <button className="bg-gray-800 w-8 h-8 rounded" onClick={() => increment('general')}>+</button>
+                    {ticketTypes.length === 0 ? (
+                        <p className="text-white text-sm">Loading ticket options...</p>
+                    ) : (
+                        ticketTypes.map((ticket) => {
+                            const id = ticket.ticketTypeId || ticket.id;
+                            const count = ticketSelections[id] || 0;
+
+                            return (
+                                <div key={id} className="flex items-center justify-between text-white mb-3 last:mb-0">
+                                    <div>
+                                        <p className="font-medium">{ticket.ticketTypeName || ticket.name}</p>
+                                        <p className="text-sm opacity-90">₦{(ticket.price || 0).toLocaleString()}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            className="bg-gray-800 text-white w-8 h-8 rounded flex items-center justify-center font-bold active:scale-95"
+                                            onClick={() => decrement(id)}
+                                        >
+                                            -
+                                        </button>
+                                        <span className="w-6 text-center">{count}</span>
+                                        <button
+                                            type="button"
+                                            className="bg-gray-800 text-white w-8 h-8 rounded flex items-center justify-center font-bold active:scale-95"
+                                            onClick={() => increment(id)}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </section>
+
+                {/* Order Summary */}
+                <section className="bg-[#00bfff] rounded-2xl shadow-lg p-5 mb-5">
+                    <h3 className="text-white text-lg font-semibold">Order Summary</h3>
+                    <p className="text-white font-medium text-lg mt-1">Total: ₦{total.toLocaleString()}</p>
+                </section>
+
+                {/* Buyer Information */}
+                <section className="bg-[#00bfff] rounded-2xl shadow-lg p-5 mb-5 flex flex-col gap-3">
+                    <h3 className="text-white text-lg font-semibold">Your Information</h3>
+
+                    <input
+                        type="text"
+                        placeholder="Full name"
+                        value={buyerInfo.name}
+                        onChange={(e) => handleBuyerInfoChange('name', e.target.value)}
+                        className={`p-2 rounded border bg-white ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                    />
+
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={buyerInfo.email}
+                        onChange={(e) => handleBuyerInfoChange('email', e.target.value)}
+                        className={`p-2 rounded border bg-white ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                    />
+                </section>
+
+                {/* Payment Information */}
+                <section className="bg-[#00bfff] rounded-2xl shadow-lg p-5 mb-5 flex flex-col gap-3">
+                    <h3 className="text-white text-lg font-semibold flex items-center gap-2">
+                        <CreditCard size={20} /> Payment Details
+                    </h3>
+
+                    <input
+                        type="text"
+                        placeholder="Card Number"
+                        value={paymentInfo.cardNumber}
+                        onChange={(e) => handlePaymentInfoChange('cardNumber', e.target.value)}
+                        className={`p-2 rounded border bg-white ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
+                    />
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <input
+                            type="text"
+                            placeholder="MM/YY"
+                            value={paymentInfo.expiry}
+                            onChange={(e) => handlePaymentInfoChange('expiry', e.target.value)}
+                            className={`p-2 rounded border bg-white ${errors.expiry ? 'border-red-500' : 'border-gray-300'}`}
+                        />
+
+                        <input
+                            type="password"
+                            placeholder="CVV"
+                            maxLength={4}
+                            value={paymentInfo.cvv}
+                            onChange={(e) => handlePaymentInfoChange('cvv', e.target.value)}
+                            className={`p-2 rounded border bg-white ${errors.cvv ? 'border-red-500' : 'border-gray-300'}`}
+                        />
                     </div>
-                </div>
+                </section>
 
-                <div className="flex items-center justify-between text-white">
-                    <p>VIP - #15,000</p>
-                    <div className="flex items-center gap-2">
-                        <button className="bg-gray-800 w-8 h-8 rounded" onClick={() => decrement('vip')}>-</button>
-                        <span>{ticketSelections.vip}</span>
-                        <button className="bg-gray-800 w-8 h-8 rounded" onClick={() => increment('vip')}>+</button>
-                    </div>
-                </div>
-            </section>
+                {/* Submit Action */}
+                <section>
+                    {status !== 'success' && (
+                        <button
+                            className="w-full bg-[#00bfff] text-white py-3 rounded-lg font-semibold disabled:opacity-60 flex items-center justify-center gap-2 hover:opacity-95 transition"
+                            onClick={handleSubmit}
+                            disabled={status === 'processing'}
+                        >
+                            {status === 'processing' ? (
+                                'Processing...'
+                            ) : (
+                                <>
+                                    <Lock size={18} /> Make Payment
+                                </>
+                            )}
+                        </button>
+                    )}
 
-            <section className="bg-indigo-500 rounded-2xl shadow-lg p-5 mb-5">
-                <h3 className="text-white text-lg font-semibold">Order Summary</h3>
-                <p className="text-white">Total: #{total}</p>
-            </section>
-
-            <section className="bg-indigo-500 rounded-2xl shadow-lg p-5 mb-5 flex flex-col gap-3">
-                <h3 className="text-white text-lg font-semibold">Your Information</h3>
-
-                <input
-                    type="text"
-                    placeholder="Full name"
-                    value={buyerInfo.name}
-                    onChange={(e) => handleBuyerInfoChange('name', e.target.value)}
-                    className={`p-2 rounded border ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-                />
-
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={buyerInfo.email}
-                    onChange={(e) => handleBuyerInfoChange('email', e.target.value)}
-                    className={`p-2 rounded border ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                />
-            </section>
-
-            <section className="bg-indigo-500 rounded-2xl shadow-lg p-5 mb-5 flex flex-col gap-3">
-                <h3 className="text-white text-lg font-semibold">Payment Details</h3>
-
-                <input
-                    type="text"
-                    placeholder="Card Number"
-                    value={paymentInfo.cardNumber}
-                    onChange={(e) => handlePaymentInfoChange('cardNumber', e.target.value)}
-                    className={`p-2 rounded border ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
-                />
-
-                <input
-                    type="text"
-                    placeholder="MM/YY"
-                    value={paymentInfo.expiry}
-                    onChange={(e) => handlePaymentInfoChange('expiry', e.target.value)}
-                    className={`p-2 rounded border ${errors.expiry ? 'border-red-500' : 'border-gray-300'}`}
-                />
-
-                <input
-                    type="text"
-                    placeholder="CVV"
-                    value={paymentInfo.cvv}
-                    onChange={(e) => handlePaymentInfoChange('cvv', e.target.value)}
-                    className={`p-2 rounded border ${errors.cvv ? 'border-red-500' : 'border-gray-300'}`}
-                />
-            </section>
-
-            <section>
-                {status !== 'success' && (
-                    <button
-                        className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold disabled:bg-indigo-300"
-                        onClick={handleSubmit}
-                        disabled={status === 'processing'}
-                    >
-                        {status === 'processing' ? 'Processing...' : 'Make Payment'}
-                    </button>
-                )}
-
-                {status === 'success' && <p className="text-green-600 text-center font-semibold">Payment Successful!</p>}
-            </section>
-        </div>
+                    {status === 'success' && (
+                        <p className="text-green-600 text-center font-semibold mt-2">Payment Successful!</p>
+                    )}
+                </section>
+            </div>
         </>
     );
 }
