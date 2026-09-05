@@ -6,8 +6,9 @@ export default function Home() {
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Get events from the backend API
+  // Fetch events from backend
   useEffect(() => {
     fetch(
       "https://eventmanagerapi-1.onrender.com/api/Events?pageNumber=1&pageSize=10"
@@ -22,7 +23,6 @@ export default function Home() {
       .then((data) => {
         console.log("Events from API:", data);
 
-        // The API may return an array or a paginated object
         const eventList = Array.isArray(data)
           ? data
           : data.items || data.data || [];
@@ -30,16 +30,17 @@ export default function Home() {
         setEvents(eventList);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
+      .catch((err) => {
+        console.error("Error fetching events:", err);
+        setError("Unable to load events.");
         setLoading(false);
       });
   }, []);
 
   return (
-    <div>
-      {/* HERO SECTION */}
-      <div style={styles.hero}>
+    <div style={styles.page}>
+      {/* ================= HERO SECTION ================= */}
+      <section style={styles.hero}>
         <div style={styles.overlay}></div>
 
         <div style={styles.content}>
@@ -83,37 +84,53 @@ export default function Home() {
             Create Account
           </button>
         </div>
-      </div>
+      </section>
 
-      {/* UPCOMING EVENTS SECTION */}
+      {/* ================= EVENTS SECTION ================= */}
       <section style={styles.eventsSection}>
         <h2 style={styles.eventsTitle}>Upcoming Events</h2>
 
-        {loading ? (
-          <p>Loading events...</p>
-        ) : events.length === 0 ? (
-          <p>No upcoming events available.</p>
-        ) : (
+        {loading && (
+          <p style={styles.message}>Loading events...</p>
+        )}
+
+        {error && (
+          <p style={styles.error}>{error}</p>
+        )}
+
+        {!loading && !error && events.length === 0 && (
+          <p style={styles.message}>
+            No upcoming events available.
+          </p>
+        )}
+
+        {!loading && !error && events.length > 0 && (
           <div style={styles.eventsGrid}>
-            {events.map((event) => (
-              <div key={event.id} style={styles.eventCard}>
+            {events.map((event, index) => (
+              <div
+                key={event.id || event.eventId || index}
+                style={styles.eventCard}
+              >
                 <h3 style={styles.eventName}>
-                  {event.eventName}
+                  {event.eventName || "Event"}
                 </h3>
 
                 <p style={styles.eventDescription}>
-                  {event.eventDescription}
+                  {event.eventDescription ||
+                    "No description available."}
                 </p>
 
-                <p>
+                <p style={styles.eventInfo}>
                   <strong>Venue:</strong>{" "}
-                  {event.eventvenue}
+                  {event.eventvenue || "Venue not available"}
                 </p>
 
-                <p>
+                <p style={styles.eventInfo}>
                   <strong>Date:</strong>{" "}
                   {event.eventDate
-                    ? new Date(event.eventDate).toLocaleDateString()
+                    ? new Date(
+                        event.eventDate
+                      ).toLocaleDateString()
                     : "Date not available"}
                 </p>
               </div>
@@ -122,26 +139,46 @@ export default function Home() {
         )}
       </section>
 
-      {/* FOOTER */}
+      {/* ================= FOOTER ================= */}
       <footer style={styles.footer}>
-        <p>© 2026 Event Manager. All rights reserved.</p>
+        <div style={styles.footerContent}>
+          <h3 style={styles.footerTitle}>
+            Event Manager
+          </h3>
+
+          <p style={styles.footerText}>
+            Discover exciting events and create unforgettable
+            memories.
+          </p>
+
+          <p style={styles.copyright}>
+            © 2026 Event Manager. All rights reserved.
+          </p>
+        </div>
       </footer>
     </div>
   );
 }
 
 const styles = {
+  page: {
+    width: "100%",
+    minHeight: "100vh",
+    fontFamily: "Arial, sans-serif",
+  },
+
+  /* HERO */
   hero: {
     minHeight: "100vh",
     backgroundImage:
       "url('https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=2000&q=80')",
     backgroundSize: "cover",
     backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
     position: "relative",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontFamily: "Arial, sans-serif",
   },
 
   overlay: {
@@ -225,47 +262,89 @@ const styles = {
     cursor: "pointer",
   },
 
+  /* EVENTS */
   eventsSection: {
-    padding: "50px 30px",
+    padding: "60px 30px",
     backgroundColor: "#f5f5f5",
     textAlign: "center",
+    minHeight: "400px",
   },
 
   eventsTitle: {
-    fontSize: "32px",
-    marginBottom: "30px",
+    fontSize: "34px",
+    marginBottom: "35px",
+    color: "#222",
   },
 
   eventsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "20px",
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "25px",
     maxWidth: "1100px",
     margin: "0 auto",
   },
 
   eventCard: {
     backgroundColor: "white",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    padding: "25px",
+    borderRadius: "12px",
+    boxShadow: "0 3px 12px rgba(0, 0, 0, 0.12)",
     textAlign: "left",
   },
 
   eventName: {
-    fontSize: "20px",
-    marginBottom: "10px",
+    fontSize: "21px",
+    marginBottom: "12px",
+    color: "#222",
   },
 
   eventDescription: {
     color: "#555",
     lineHeight: "1.5",
+    marginBottom: "15px",
   },
 
+  eventInfo: {
+    color: "#444",
+    marginBottom: "8px",
+  },
+
+  message: {
+    fontSize: "18px",
+    color: "#555",
+  },
+
+  error: {
+    fontSize: "18px",
+    color: "red",
+  },
+
+  /* FOOTER */
   footer: {
-    padding: "25px",
     backgroundColor: "#222",
     color: "white",
+    padding: "40px 20px",
     textAlign: "center",
+  },
+
+  footerContent: {
+    maxWidth: "900px",
+    margin: "0 auto",
+  },
+
+  footerTitle: {
+    fontSize: "24px",
+    marginBottom: "10px",
+  },
+
+  footerText: {
+    color: "#ddd",
+    marginBottom: "20px",
+  },
+
+  copyright: {
+    color: "#aaa",
+    fontSize: "14px",
   },
 };

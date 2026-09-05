@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { apiFetch } from "../core/services/api";
+import { apiFetch } from "../api";
 
 export default function CreateEvent() {
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
-  const [eventvenue, setEventvenue] = useState("");
+  const [eventVenue, setEventVenue] = useState("");
   const [eventDate, setEventDate] = useState("");
 
   const [message, setMessage] = useState("");
@@ -19,10 +19,13 @@ export default function CreateEvent() {
     try {
       const data = await apiFetch("/Event", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           eventName: eventName,
           eventDescription: eventDescription,
-          eventvenue: eventvenue,
+          eventVenue: eventVenue,
           eventDate: eventDate,
         }),
       });
@@ -33,11 +36,11 @@ export default function CreateEvent() {
 
       setEventName("");
       setEventDescription("");
-      setEventvenue("");
+      setEventVenue("");
       setEventDate("");
     } catch (error) {
       console.error("CREATE EVENT ERROR:", error);
-      setMessage(error.message);
+      setMessage(error.message || "Failed to create event.");
     } finally {
       setLoading(false);
     }
@@ -69,8 +72,8 @@ export default function CreateEvent() {
           <label>Venue</label>
           <input
             type="text"
-            value={eventvenue}
-            onChange={(e) => setEventvenue(e.target.value)}
+            value={eventVenue}
+            onChange={(e) => setEventVenue(e.target.value)}
             placeholder="Enter event venue"
             required
           />
@@ -111,5 +114,9 @@ const styles = {
     padding: "30px",
     borderRadius: "15px",
     boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
+  },
+
+  input: {
+    width: "100%",
   },
 };
