@@ -93,7 +93,7 @@ export default function Login() {
     <div style={styles.container}>
       <div style={styles.card}>
         {/* TITLE */}
-        <h2 style={styles.title}>Welcome Back Cutie 🥰</h2>
+        <h2 style={styles.title}>Welcome Back🥰</h2>
 
         <p style={styles.subtitle}>Sign in to continue</p>
 

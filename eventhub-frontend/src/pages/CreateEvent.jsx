@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { apiFetch } from "../api";
+import { apiFetch } from "../core/services/api";
 
 export default function CreateEvent() {
   const [eventName, setEventName] = useState("");
