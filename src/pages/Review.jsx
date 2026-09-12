@@ -1,3 +1,4 @@
+import Footer from "../shared/components/Footer";
 const AboutUs = () => {
   const testimonials = [
     {
