@@ -13,7 +13,7 @@ const AboutUs = () => {
         "As an event organizer, EventHub has made it much easier to reach people and manage my events.",
     },
     {
-      name: "Abioye Olalekan",
+      name: "Olalekan Abioye",
       role: "Event Attendee",
       message:
         "I found an amazing event through EventHub and the booking process was quick and stress-free. I definitely recommend it!",
